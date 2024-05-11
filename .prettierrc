@@ -3,6 +3,5 @@
   "semi": true,
   "trailingComma": "all",
   "jsxSingleQuote": false,
-  "printWidth": 100,
   "tabWidth": 2
 }

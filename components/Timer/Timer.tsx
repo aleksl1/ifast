@@ -5,12 +5,17 @@ import { Button, useTheme } from "react-native-paper";
 import TimeDisplay from "./TimeDisplay";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { View } from "react-native";
+import { getFastTimeInSeconds } from "@/utils/utils";
 
-const fastLength = 60;
+type TimerProps = {
+  fastLength: number;
+  reset: boolean;
+};
 
-const Timer: FC = () => {
+const Timer: FC<TimerProps> = ({ fastLength, reset }) => {
   const [timerValue, setTimerValue] = useState(0);
   const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
+
   const [isStarted, setIsStarted] = useState(false);
   const {
     colors: { primary, secondary },
@@ -45,12 +50,20 @@ const Timer: FC = () => {
     }
   }, [isStarted, savedTime, setSavedTime]);
 
+  useEffect(() => {
+    if (reset) {
+      setIsStarted(false);
+      setTimerValue(0);
+      storage.delete("savedTime");
+    }
+  }, [reset]);
+
   return (
     <View style={{ gap: 16 }}>
       <AnimatedCircularProgress
         size={200}
         width={15}
-        fill={(timerValue * 100) / fastLength}
+        fill={(timerValue * 100) / getFastTimeInSeconds(fastLength)}
         tintColor={secondary}
         onAnimationComplete={() => console.log("onAnimationComplete")}
         backgroundColor={primary}
