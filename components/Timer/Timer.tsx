@@ -1,5 +1,5 @@
 import { storage } from "@/store/mmkvStorage";
-import { FC, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useMMKVNumber } from "react-native-mmkv";
 import { Button, useTheme } from "react-native-paper";
 import TimeDisplay from "./TimeDisplay";
@@ -10,9 +10,10 @@ import { getFastTimeInSeconds } from "@/utils/utils";
 type TimerProps = {
   fastLength: number;
   reset: boolean;
+  setReset: Dispatch<SetStateAction<boolean>>;
 };
 
-const Timer: FC<TimerProps> = ({ fastLength, reset }) => {
+const Timer: FC<TimerProps> = ({ fastLength, reset, setReset }) => {
   const [timerValue, setTimerValue] = useState(0);
   const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
 
@@ -39,7 +40,7 @@ const Timer: FC<TimerProps> = ({ fastLength, reset }) => {
   }, [savedTime]);
 
   useEffect(() => {
-    if (isStarted) {
+    if (isStarted && !reset) {
       const timer = setInterval(() => {
         setTimerValue((t) => t + 1);
         setSavedTime(savedTime ? savedTime + 1 : 1);
@@ -48,15 +49,16 @@ const Timer: FC<TimerProps> = ({ fastLength, reset }) => {
         clearInterval(timer);
       };
     }
-  }, [isStarted, savedTime, setSavedTime]);
+  }, [isStarted, reset, savedTime, setSavedTime]);
 
   useEffect(() => {
     if (reset) {
       setIsStarted(false);
       setTimerValue(0);
       storage.delete("savedTime");
+      setReset(false);
     }
-  }, [reset]);
+  }, [reset, setReset]);
 
   return (
     <View style={{ gap: 16 }}>

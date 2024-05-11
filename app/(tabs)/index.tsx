@@ -18,7 +18,7 @@ export default function TabOneScreen() {
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
-    storage.set("selectedFast", JSON.stringify(selectedFast));
+    storage.set("selectedFast", JSON.stringify(fast));
     setDialogVisible(false);
     setShouldResetTimerState(true);
   };
@@ -46,6 +46,7 @@ export default function TabOneScreen() {
           <Timer
             fastLength={selectedFast.value}
             reset={shouldResetTimerState}
+            setReset={setShouldResetTimerState}
           />
           <FAB
             label="Wybierz post"
@@ -55,16 +56,16 @@ export default function TabOneScreen() {
             icon="book-search-outline"
             size="large"
           />
-          <Dialog
-            visible={dialogVisible}
-            onDismiss={() => setDialogVisible(false)}
-          >
-            <FastOptionsList
-              onChipPress={onFastOptionSelect}
-              selectedFast={selectedFast}
-            />
-          </Dialog>
         </View>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={() => setDialogVisible(false)}
+        >
+          <FastOptionsList
+            onChipPress={onFastOptionSelect}
+            selectedFast={selectedFast}
+          />
+        </Dialog>
       </View>
     )
   );
