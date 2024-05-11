@@ -1,6 +1,6 @@
 import { storage } from "@/store/mmkvStorage";
 import { globalStyles } from "@/styles/globalStyles";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useMMKVNumber } from "react-native-mmkv";
 import { Text, Button } from "react-native-paper";
@@ -13,17 +13,17 @@ export default function TabOneScreen() {
   const hasSavedTime = storage.contains("savedTime");
   const [isStarted, setIsStarted] = useState(false);
 
-  const storeTimeOnUnmount = () => {
+  const storeTimeOnUnmount = useCallback(() => {
     const newTime = savedTime ? savedTime + timerValue : timerValue;
     setSavedTime(newTime);
-  };
+  }, [savedTime, setSavedTime, timerValue]);
 
   useEffect(() => {
     if (hasSavedTime && savedTime) {
       setTimerValue(savedTime);
       setIsStarted(true);
     }
-  }, []);
+  }, [hasSavedTime, savedTime]);
 
   useEffect(() => {
     if (isStarted) {
@@ -33,17 +33,20 @@ export default function TabOneScreen() {
         storeTimeOnUnmount();
       };
     }
-  }, []);
+  }, [isStarted, storeTimeOnUnmount]);
 
   return (
     <View style={globalStyles.container}>
       <Text>{timerValue}</Text>
-      <Button mode='contained' onPress={() => setIsStarted(true)}>
-        Zacznij post
-      </Button>
-      <Button mode='contained' onPress={() => setIsStarted(true)}>
-        Zakończ post
-      </Button>
+      {hasSavedTime ? (
+        <Button mode="contained" onPress={() => setIsStarted(true)}>
+          Zakończ post
+        </Button>
+      ) : (
+        <Button mode="contained" onPress={() => setIsStarted(true)}>
+          Zacznij post
+        </Button>
+      )}
     </View>
   );
 }
