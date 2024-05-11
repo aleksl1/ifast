@@ -67,7 +67,6 @@ const Timer: FC<TimerProps> = ({ fastLength, reset, setReset }) => {
         width={15}
         fill={(timerValue * 100) / getFastTimeInSeconds(fastLength)}
         tintColor={secondary}
-        onAnimationComplete={() => console.log("onAnimationComplete")}
         backgroundColor={primary}
         style={{ alignSelf: "center" }}
       >
