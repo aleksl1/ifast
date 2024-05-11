@@ -9,7 +9,7 @@ import { Text, Button } from "react-native-paper";
 
 export default function TabOneScreen() {
   const [timerValue, setTimerValue] = useState(0);
-  const [savedTime, setSavedTime] = useMMKVNumber("user.age");
+  const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
   const hasSavedTime = storage.contains("savedTime");
   const [isStarted, setIsStarted] = useState(false);
 
@@ -19,7 +19,10 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
-    if (hasSavedTime && savedTime) setTimerValue(savedTime);
+    if (hasSavedTime && savedTime) {
+      setTimerValue(savedTime);
+      setIsStarted(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -35,10 +38,10 @@ export default function TabOneScreen() {
   return (
     <View style={globalStyles.container}>
       <Text>{timerValue}</Text>
-      <Button mode="contained" onPress={() => setIsStarted(true)}>
+      <Button mode='contained' onPress={() => setIsStarted(true)}>
         Zacznij post
       </Button>
-      <Button mode="contained" onPress={() => setIsStarted(true)}>
+      <Button mode='contained' onPress={() => setIsStarted(true)}>
         Zakończ post
       </Button>
     </View>
