@@ -1,31 +1,46 @@
-import { StyleSheet } from 'react-native';
+import { storage } from "@/store/mmkvStorage";
+import { globalStyles } from "@/styles/globalStyles";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
+import { useMMKVNumber } from "react-native-mmkv";
+import { Text, Button } from "react-native-paper";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+// const fast16 =
 
 export default function TabOneScreen() {
+  const [timerValue, setTimerValue] = useState(0);
+  const [savedTime, setSavedTime] = useMMKVNumber("user.age");
+  const hasSavedTime = storage.contains("savedTime");
+  const [isStarted, setIsStarted] = useState(false);
+
+  const storeTimeOnUnmount = () => {
+    const newTime = savedTime ? savedTime + timerValue : timerValue;
+    setSavedTime(newTime);
+  };
+
+  useEffect(() => {
+    if (hasSavedTime && savedTime) setTimerValue(savedTime);
+  }, []);
+
+  useEffect(() => {
+    if (isStarted) {
+      const timer = setInterval(() => setTimerValue((t) => t + 1), 1000);
+      return () => {
+        clearInterval(timer);
+        storeTimeOnUnmount();
+      };
+    }
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+    <View style={globalStyles.container}>
+      <Text>{timerValue}</Text>
+      <Button mode="contained" onPress={() => setIsStarted(true)}>
+        Zacznij post
+      </Button>
+      <Button mode="contained" onPress={() => setIsStarted(true)}>
+        Zakończ post
+      </Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
