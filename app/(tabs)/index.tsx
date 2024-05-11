@@ -48,10 +48,12 @@ export default function TabOneScreen() {
             reset={shouldResetTimerState}
           />
           <FAB
-            icon="pencil"
             label="Wybierz post"
             style={{ position: "absolute", bottom: 16, right: 16 }}
             onPress={() => setDialogVisible(true)}
+            variant="secondary"
+            icon="book-search-outline"
+            size="large"
           />
           <Dialog
             visible={dialogVisible}
