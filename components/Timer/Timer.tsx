@@ -1,13 +1,20 @@
 import { storage } from "@/store/mmkvStorage";
 import { FC, useEffect, useState } from "react";
 import { useMMKVNumber } from "react-native-mmkv";
-import { Button } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 import TimeDisplay from "./TimeDisplay";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { View } from "react-native";
+
+const fastLength = 60;
 
 const Timer: FC = () => {
   const [timerValue, setTimerValue] = useState(0);
   const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
   const [isStarted, setIsStarted] = useState(false);
+  const {
+    colors: { primary, secondary },
+  } = useTheme();
 
   const onEnd = () => {
     setIsStarted(false);
@@ -39,8 +46,18 @@ const Timer: FC = () => {
   }, [isStarted, savedTime, setSavedTime]);
 
   return (
-    <>
-      <TimeDisplay value={timerValue} />
+    <View style={{ gap: 16 }}>
+      <AnimatedCircularProgress
+        size={200}
+        width={15}
+        fill={(timerValue * 100) / fastLength}
+        tintColor={secondary}
+        onAnimationComplete={() => console.log("onAnimationComplete")}
+        backgroundColor={primary}
+        style={{ alignSelf: "center" }}
+      >
+        {() => <TimeDisplay value={timerValue} />}
+      </AnimatedCircularProgress>
       {isStarted ? (
         <Button mode="contained" onPress={onEnd}>
           Zakończ post
@@ -50,7 +67,7 @@ const Timer: FC = () => {
           Zacznij post
         </Button>
       )}
-    </>
+    </View>
   );
 };
 
