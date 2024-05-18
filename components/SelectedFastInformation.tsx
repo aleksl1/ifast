@@ -1,11 +1,6 @@
 import { FastDetails } from "@/types/fastTypes";
 import { FC, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, DefaultTheme, Modal, Portal, Text } from "react-native-paper";
 
 type SelectedFastInformationProps = {
@@ -16,7 +11,6 @@ const SelectedFastInformation: FC<SelectedFastInformationProps> = ({
   selectedFast,
 }) => {
   const [visible, setVisible] = useState(false);
-  const { height } = useWindowDimensions();
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   return (
@@ -25,22 +19,13 @@ const SelectedFastInformation: FC<SelectedFastInformationProps> = ({
         <Modal
           visible={visible}
           onDismiss={hideModal}
-          contentContainerStyle={{
-            backgroundColor: "white",
-            position: "absolute",
-            top: 80,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderTopRightRadius: 30,
-            borderTopLeftRadius: 30,
-            overflow: "hidden",
-          }}
+          contentContainerStyle={styles.modal}
+          testID="FAST_INFO_MODAL"
         >
           <ScrollView>
             <View style={styles.container}>
               <Text style={styles.header} variant="titleLarge">
-                Różnorodność Postów Prerywanych: Kluczem do Lepszego Zdrowia
+                Różnorodność Postów Przerywanych
               </Text>
               <Text variant="bodyMedium" style={styles.paragraph}>
                 Posty przerywane, znane również jako okresowe ograniczenia
@@ -149,5 +134,16 @@ const styles = StyleSheet.create({
   },
   paragraph: {
     marginBottom: 10,
+  },
+  modal: {
+    backgroundColor: "white",
+    position: "absolute",
+    top: 80,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
+    overflow: "hidden",
   },
 });
