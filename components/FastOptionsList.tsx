@@ -1,5 +1,6 @@
 import { fastDurations } from "@/constants/fastOptions";
 import { storage } from "@/store/mmkvStorage";
+import { keys } from "@/store/storageKeys";
 import { FastDetails } from "@/types/fastTypes";
 import { showAlert } from "@/utils/utils";
 import { FC } from "react";
@@ -15,7 +16,7 @@ const FastOptionsList: FC<FastOptionsListProps> = ({
   onChipPress,
   selectedFast,
 }) => {
-  const isFastInProgress = storage.contains("savedTime");
+  const isFastInProgress = storage.contains(keys.savedTime);
   const confirmSelection = (fastDetails: FastDetails) => {
     showAlert(
       "Czy chcesz rozpocząć inny post?",

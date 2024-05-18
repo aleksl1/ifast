@@ -1,5 +1,6 @@
 import { defaultSelectedFast } from "@/constants/fastOptions";
 import { storage } from "@/store/mmkvStorage";
+import { getFastKey, keys } from "@/store/storageKeys";
 import { FastDetails } from "@/types/fastTypes";
 import { showAlert } from "@/utils/utils";
 import { useEffect, useMemo, useState } from "react";
@@ -7,10 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 export const useFastList = () => {
   const [fastList, setFastList] = useState<FastDetails[]>([]);
 
-  const getFastKey = (i: number) => `fastList-${i}`;
-
   const lastSavedFastId = useMemo(() => {
-    if (!storage.contains("fastList-1")) return 0;
+    if (!storage.contains(getFastKey(1))) return 0;
     let i = 1;
     while (storage.contains(getFastKey(i))) {
       i++;
@@ -20,7 +19,6 @@ export const useFastList = () => {
 
   useEffect(() => {
     if (!lastSavedFastId) return;
-    setFastList([]);
     for (let i = 1; i <= lastSavedFastId; i++) {
       const fastJSON = storage.getString(getFastKey(i));
       if (!fastJSON) return;
@@ -43,7 +41,7 @@ export const useFastList = () => {
         },
       ],
     );
-    storage.set("selectedFast", JSON.stringify(defaultSelectedFast));
+    storage.set(keys.selectedFast, JSON.stringify(defaultSelectedFast));
   };
 
   return { fastList, clearStoredFasts };

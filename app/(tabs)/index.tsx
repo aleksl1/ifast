@@ -12,26 +12,27 @@ import { useMMKVNumber } from "react-native-mmkv";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
 import { useSaveFastToList } from "@/hooks/useSaveFastToList";
+import { keys } from "@/store/storageKeys";
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedFast, setSelectedFast] = useState<FastDetails>();
   const [shouldResetTimerState, setShouldResetTimerState] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [savedTime] = useMMKVNumber("savedTime");
+  const [savedTime] = useMMKVNumber(keys.savedTime);
   const [initialTimerValue, setInitialTimerValue] = useState(0);
   const { save } = useSaveFastToList();
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
-    storage.set("selectedFast", JSON.stringify(fast));
+    storage.set(keys.selectedFast, JSON.stringify(fast));
     setDialogVisible(false);
     setShouldResetTimerState(true);
   };
 
   const onEnd = () => {
     setIsStarted(false);
-    storage.delete("savedTime");
+    storage.delete(keys.savedTime);
     setInitialTimerValue(0);
     setShouldResetTimerState(true);
   };
@@ -43,7 +44,7 @@ export default function TabOneScreen() {
       startTimestamp: new Date().getTime(),
     };
     setSelectedFast(startedFast);
-    storage.set("selectedFast", JSON.stringify(startedFast));
+    storage.set(keys.selectedFast, JSON.stringify(startedFast));
     setIsStarted(true);
   };
 
@@ -76,14 +77,14 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (!selectedFast) {
-      if (storage.contains("selectedFast")) {
-        const storedFastJson = storage.getString("selectedFast");
+      if (storage.contains(keys.selectedFast)) {
+        const storedFastJson = storage.getString(keys.selectedFast);
         if (storedFastJson) {
           const storedFast = JSON.parse(storedFastJson);
           setSelectedFast(storedFast);
         }
       } else {
-        storage.set("selectedFast", JSON.stringify(defaultSelectedFast)); //todo: move to hook
+        storage.set(keys.selectedFast, JSON.stringify(defaultSelectedFast)); //todo: move to hook
       }
     }
   }, [selectedFast]);

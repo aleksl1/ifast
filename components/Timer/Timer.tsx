@@ -6,6 +6,7 @@ import TimeDisplay from "./TimeDisplay";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { View } from "react-native";
 import { getFastTimeInSeconds } from "@/utils/utils";
+import { keys } from "@/store/storageKeys";
 
 type TimerProps = {
   fastLength: number;
@@ -23,7 +24,7 @@ const Timer: FC<TimerProps> = ({
   initialValue = 0,
 }) => {
   const [timerValue, setTimerValue] = useState(initialValue);
-  const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
+  const [savedTime, setSavedTime] = useMMKVNumber(keys.savedTime);
   const {
     colors: { primary, secondary },
   } = useTheme();
@@ -48,7 +49,7 @@ const Timer: FC<TimerProps> = ({
   useEffect(() => {
     if (reset) {
       setTimerValue(0);
-      storage.delete("savedTime");
+      storage.delete(keys.savedTime);
       setReset(false);
     }
   }, [reset, setReset]);
