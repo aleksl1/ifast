@@ -5,9 +5,12 @@ import { fastDurations } from "@/constants/fastOptions";
 import { storage } from "@/store/mmkvStorage";
 import { globalStyles } from "@/styles/globalStyles";
 import { FastDetails } from "@/types/fastTypes";
-import { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Dialog, Divider, FAB } from "react-native-paper";
+import { getSecondsFromStartToNow, showAlert } from "@/utils/utils";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { useMMKVNumber } from "react-native-mmkv";
+import { Button, Dialog, Divider, FAB } from "react-native-paper";
+import { router } from "expo-router";
 
 const defaultSelectedFast = fastDurations[16];
 
@@ -15,6 +18,9 @@ export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedFast, setSelectedFast] = useState<FastDetails>();
   const [shouldResetTimerState, setShouldResetTimerState] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
+  const [savedTime] = useMMKVNumber("savedTime");
+  const [initialTimerValue, setInitialTimerValue] = useState(0);
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
@@ -22,6 +28,50 @@ export default function TabOneScreen() {
     setDialogVisible(false);
     setShouldResetTimerState(true);
   };
+
+  const onEnd = () => {
+    setIsStarted(false);
+    storage.delete("savedTime");
+    setInitialTimerValue(0);
+    setShouldResetTimerState(true);
+  };
+
+  const onStart = () => {
+    if (!selectedFast) return;
+    const startedFast = {
+      ...selectedFast,
+      startTimestamp: new Date().getTime(),
+    };
+    setSelectedFast(startedFast);
+    storage.set("selectedFast", JSON.stringify(startedFast));
+    setIsStarted(true);
+  };
+
+  const onFastCompleted = useCallback(() => {
+    showAlert("Gratulacje", "ukończono post!");
+    onEnd();
+    router.navigate("/two");
+    //todo: save to all fast list
+  }, []);
+
+  useEffect(() => {
+    if (selectedFast?.startTimestamp) {
+      setInitialTimerValue(
+        getSecondsFromStartToNow(selectedFast.startTimestamp),
+      );
+      setIsStarted(true);
+    }
+  }, [selectedFast?.startTimestamp]);
+
+  useEffect(() => {
+    if (!savedTime || !selectedFast?.totalTimeSeconds) return;
+    if (savedTime > selectedFast?.totalTimeSeconds) onFastCompleted();
+  }, [
+    onFastCompleted,
+    savedTime,
+    selectedFast,
+    selectedFast?.totalTimeSeconds,
+  ]);
 
   useEffect(() => {
     if (!selectedFast) {
@@ -37,20 +87,35 @@ export default function TabOneScreen() {
     }
   }, [selectedFast]);
 
+  useEffect(() => {
+    return () => console.log("end");
+  }, []);
+
   return (
     selectedFast && (
-      <View style={[globalStyles.container, { gap: 8 }]}>
+      <View style={styles.container}>
         <SelectedFastInformation selectedFast={selectedFast} />
         <Divider />
-        <View style={{ flex: 1, justifyContent: "center" }}>
+        <View style={styles.timerContainer}>
           <Timer
             fastLength={selectedFast.value}
             reset={shouldResetTimerState}
             setReset={setShouldResetTimerState}
+            isStarted={isStarted}
+            initialValue={initialTimerValue}
           />
+          {isStarted ? (
+            <Button mode="contained" onPress={onEnd}>
+              Zakończ post
+            </Button>
+          ) : (
+            <Button mode="contained" onPress={onStart}>
+              Zacznij post
+            </Button>
+          )}
           <FAB
             label="Wybierz post"
-            style={{ position: "absolute", bottom: 16, right: 16 }}
+            style={styles.fab}
             onPress={() => setDialogVisible(true)}
             variant="secondary"
             icon="book-search-outline"
@@ -70,3 +135,14 @@ export default function TabOneScreen() {
     )
   );
 }
+
+const styles = StyleSheet.create({
+  container: { ...globalStyles.container, gap: 8 },
+  timerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  fab: { position: "absolute", bottom: 16, right: 16 },
+});

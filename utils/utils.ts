@@ -1,10 +1,10 @@
 import { Alert, AlertButton, Platform } from "react-native";
 
-export const getFastTimeInSeconds = (hours: number) => hours * 60 * 60;
+export const getFastTimeInSeconds = (hours: number) => hours;
 
 export const showAlert = (
   title: string,
-  message?: string,
+  message: string = "",
   buttons?: AlertButton[],
 ) => {
   if (Platform.OS === "web") {
@@ -14,4 +14,10 @@ export const showAlert = (
   } else {
     Alert.alert(title, message, buttons);
   }
+};
+
+export const getSecondsFromStartToNow = (start: number) => {
+  const now = new Date().getTime();
+  const seconds = (now - start) / 1000;
+  return +seconds.toFixed();
 };

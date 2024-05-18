@@ -1,7 +1,7 @@
 import { storage } from "@/store/mmkvStorage";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useMMKVNumber } from "react-native-mmkv";
-import { Button, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import TimeDisplay from "./TimeDisplay";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { View } from "react-native";
@@ -11,33 +11,27 @@ type TimerProps = {
   fastLength: number;
   reset: boolean;
   setReset: Dispatch<SetStateAction<boolean>>;
+  isStarted: boolean;
+  initialValue?: number;
 };
 
-const Timer: FC<TimerProps> = ({ fastLength, reset, setReset }) => {
-  const [timerValue, setTimerValue] = useState(0);
+const Timer: FC<TimerProps> = ({
+  fastLength,
+  reset,
+  setReset,
+  isStarted,
+  initialValue = 0,
+}) => {
+  const [timerValue, setTimerValue] = useState(initialValue);
   const [savedTime, setSavedTime] = useMMKVNumber("savedTime");
-
-  const [isStarted, setIsStarted] = useState(false);
   const {
     colors: { primary, secondary },
   } = useTheme();
 
-  const onEnd = () => {
-    setIsStarted(false);
-    storage.delete("savedTime");
-    setTimerValue(0);
-  };
-
-  const onStart = () => {
-    setIsStarted(true);
-  };
-
   useEffect(() => {
-    if (savedTime) {
-      setTimerValue(savedTime);
-      setIsStarted(true);
-    }
-  }, [savedTime]);
+    setSavedTime(initialValue);
+    setTimerValue(initialValue);
+  }, [initialValue, setSavedTime]);
 
   useEffect(() => {
     if (isStarted && !reset) {
@@ -53,7 +47,6 @@ const Timer: FC<TimerProps> = ({ fastLength, reset, setReset }) => {
 
   useEffect(() => {
     if (reset) {
-      setIsStarted(false);
       setTimerValue(0);
       storage.delete("savedTime");
       setReset(false);
@@ -72,15 +65,6 @@ const Timer: FC<TimerProps> = ({ fastLength, reset, setReset }) => {
       >
         {() => <TimeDisplay value={timerValue} />}
       </AnimatedCircularProgress>
-      {isStarted ? (
-        <Button mode="contained" onPress={onEnd}>
-          Zakończ post
-        </Button>
-      ) : (
-        <Button mode="contained" onPress={onStart}>
-          Zacznij post
-        </Button>
-      )}
     </View>
   );
 };

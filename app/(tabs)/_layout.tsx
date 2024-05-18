@@ -22,6 +22,12 @@ export default function TabLayout() {
           tabBarIcon: () => <IconButton icon="playlist-edit" size={48} />,
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          tabBarIcon: () => <IconButton icon="account-settings" size={48} />,
+        }}
+      />
     </Tabs>
   );
 }
