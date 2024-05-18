@@ -12,9 +12,10 @@ export const useSaveFastToList = () => {
   };
 
   const save = () =>
+    storedFastJson &&
     storage.set(
       `fastList-${getNewFastStorageId()}`,
-      JSON.stringify(storedFastJson),
+      JSON.stringify(JSON.parse(storedFastJson)),
     );
 
   return { save };

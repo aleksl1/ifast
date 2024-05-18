@@ -1,7 +1,7 @@
 import FastOptionsList from "@/components/FastOptionsList";
 import SelectedFastInformation from "@/components/SelectedFastInformation";
 import Timer from "@/components/Timer/Timer";
-import { fastDurations } from "@/constants/fastOptions";
+import { defaultSelectedFast } from "@/constants/fastOptions";
 import { storage } from "@/store/mmkvStorage";
 import { globalStyles } from "@/styles/globalStyles";
 import { FastDetails } from "@/types/fastTypes";
@@ -12,8 +12,6 @@ import { useMMKVNumber } from "react-native-mmkv";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
 import { useSaveFastToList } from "@/hooks/useSaveFastToList";
-
-const defaultSelectedFast = fastDurations[16];
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -54,7 +52,7 @@ export default function TabOneScreen() {
     onEnd();
     console.log("save??");
     save();
-    router.navigate("/two");
+    router.navigate("/list");
   }, [save]);
 
   useEffect(() => {
@@ -85,7 +83,7 @@ export default function TabOneScreen() {
           setSelectedFast(storedFast);
         }
       } else {
-        storage.set("selectedFast", JSON.stringify(defaultSelectedFast));
+        storage.set("selectedFast", JSON.stringify(defaultSelectedFast)); //todo: move to hook
       }
     }
   }, [selectedFast]);

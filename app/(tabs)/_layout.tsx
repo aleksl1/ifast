@@ -17,7 +17,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="fastList"
         options={{
           tabBarIcon: () => <IconButton icon="playlist-edit" size={48} />,
         }}

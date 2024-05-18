@@ -33,3 +33,5 @@ export const fastDurations: FastDurations = {
     level: FastLevel.Advanced,
   },
 };
+
+export const defaultSelectedFast = fastDurations[16];
