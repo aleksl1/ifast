@@ -11,6 +11,7 @@ import { StyleSheet, View } from "react-native";
 import { useMMKVNumber } from "react-native-mmkv";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
+import { useSaveFastToList } from "@/hooks/useSaveFastToList";
 
 const defaultSelectedFast = fastDurations[16];
 
@@ -21,6 +22,7 @@ export default function TabOneScreen() {
   const [isStarted, setIsStarted] = useState(false);
   const [savedTime] = useMMKVNumber("savedTime");
   const [initialTimerValue, setInitialTimerValue] = useState(0);
+  const { save } = useSaveFastToList();
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
@@ -50,9 +52,10 @@ export default function TabOneScreen() {
   const onFastCompleted = useCallback(() => {
     showAlert("Gratulacje", "ukończono post!");
     onEnd();
+    console.log("save??");
+    save();
     router.navigate("/two");
-    //todo: save to all fast list
-  }, []);
+  }, [save]);
 
   useEffect(() => {
     if (selectedFast?.startTimestamp) {
@@ -86,10 +89,6 @@ export default function TabOneScreen() {
       }
     }
   }, [selectedFast]);
-
-  useEffect(() => {
-    return () => console.log("end");
-  }, []);
 
   return (
     selectedFast && (
