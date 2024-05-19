@@ -1,15 +1,26 @@
 import { FC } from "react";
-import { Card as CardPaper, Text } from "react-native-paper";
+import { StyleSheet } from "react-native";
+import { Card as CardPaper, CardTitleProps } from "react-native-paper";
 
-type Props = {};
+type Props = CardTitleProps;
 
-const Card: FC<Props> = () => (
-  <CardPaper>
-    <CardPaper.Content>
-      <Text variant="titleLarge">Card title</Text>
-      <Text variant="bodyMedium">Card content</Text>
-    </CardPaper.Content>
-  </CardPaper>
+const Card: FC<Props> = ({ title, subtitle, style, ...rest }) => (
+  <CardPaper.Title
+    title={title}
+    subtitle={subtitle}
+    style={[styles.card, style]}
+    {...rest}
+  />
 );
 
 export default Card;
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    shadowColor: "black",
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.2,
+  },
+});

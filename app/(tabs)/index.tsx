@@ -49,6 +49,7 @@ export default function TabOneScreen() {
   };
 
   const onFastCompleted = useCallback(() => {
+    storage.delete(keys.savedTime);
     showAlert("Gratulacje", "ukończono post!");
     onEnd();
     console.log("save??");

@@ -30,3 +30,17 @@ export const formatSeconds = (seconds: number): string => {
   const remainingSeconds: number = seconds % 60;
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 };
+
+export const getFastCardSubtitleText = (
+  startTimestamp: number,
+  totalTime: number,
+) => {
+  const time = new Date(startTimestamp + totalTime * 1000).toLocaleString(
+    "pl",
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    },
+  );
+  return `Zakończono, ${time}`;
+};

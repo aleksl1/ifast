@@ -3,10 +3,11 @@ import { storage } from "@/store/mmkvStorage";
 import { getFastKey, keys } from "@/store/storageKeys";
 import { FastDetails } from "@/types/fastTypes";
 import { showAlert } from "@/utils/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export const useFastList = () => {
   const [fastList, setFastList] = useState<FastDetails[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const lastSavedFastId = useMemo(() => {
     if (!storage.contains(getFastKey(1))) return 0;
@@ -17,7 +18,7 @@ export const useFastList = () => {
     return i;
   }, []);
 
-  useEffect(() => {
+  const readStoredFasts = () => {
     if (!lastSavedFastId) return;
     for (let i = 1; i <= lastSavedFastId; i++) {
       const fastJSON = storage.getString(getFastKey(i));
@@ -30,7 +31,13 @@ export const useFastList = () => {
         return [...prev, fast];
       });
     }
-  }, [lastSavedFastId]);
+  };
+
+  const getStoredFasts = () => {
+    setIsLoading(true);
+    readStoredFasts();
+    setIsLoading(false);
+  };
 
   const clearStoredFasts = () => {
     showAlert(
@@ -49,5 +56,5 @@ export const useFastList = () => {
     storage.set(keys.selectedFast, JSON.stringify(defaultSelectedFast));
   };
 
-  return { fastList, clearStoredFasts };
+  return { fastList, clearStoredFasts, getStoredFasts, isLoading };
 };
