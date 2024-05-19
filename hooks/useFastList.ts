@@ -22,8 +22,13 @@ export const useFastList = () => {
     for (let i = 1; i <= lastSavedFastId; i++) {
       const fastJSON = storage.getString(getFastKey(i));
       if (!fastJSON) return;
-      const fast = JSON.parse(fastJSON);
-      setFastList((prev) => (prev.length ? [...prev, fast] : [fast]));
+      const fast: FastDetails = JSON.parse(fastJSON);
+      setFastList((prev) => {
+        if (!prev) return [fast];
+        if (prev.find((f) => f.startTimestamp === fast.startTimestamp))
+          return prev;
+        return [...prev, fast];
+      });
     }
   }, [lastSavedFastId]);
 
