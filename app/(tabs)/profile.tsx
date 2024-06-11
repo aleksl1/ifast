@@ -8,6 +8,8 @@ export default function ProfileScreen() {
 
   //todo: waga początkowa, waga aktualna, pierwszy ukończony post - data, ukończonych postów w miesiącu, całkowity czas postów, najwięcej razy ukończono post X,
 
+  //todo: 1 surface z liczbą a obok opis textowy
+
   return (
     <View style={styles.container}>
       <Avatar.Image size={100} source={require("../../assets/avatar.jpg")} />
