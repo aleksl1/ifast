@@ -17,7 +17,7 @@ export const useFastList = () => {
     }
     return i;
   }, []);
-  //test
+
   const readStoredFasts = () => {
     if (!lastSavedFastId) return;
     for (let i = 1; i <= lastSavedFastId; i++) {
