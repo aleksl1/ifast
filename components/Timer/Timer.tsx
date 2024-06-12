@@ -26,7 +26,7 @@ const Timer: FC<TimerProps> = ({
   const [timerValue, setTimerValue] = useState(initialValue);
   const [savedTime, setSavedTime] = useMMKVNumber(keys.savedTime);
   const {
-    colors: { primary, onPrimary, primaryContainer },
+    colors: { primary, onPrimary },
   } = useTheme();
 
   useEffect(() => {
@@ -72,15 +72,8 @@ const Timer: FC<TimerProps> = ({
       >
         {() => <TimeDisplay value={timerValue} />}
       </AnimatedCircularProgress>
-      {/* <View style={styles.tip1}>
-        <Text>TIP 1</Text>
-      </View> */}
-      {/* <View style={[styles.tip2, { backgroundColor: primaryContainer }]}>
-        <Text style={[styles.tip2text, { color: primary }]}>Jesteś</Text>
-        <Text style={[styles.tip2text, { color: primary }]}>blisko mety!</Text>
-      </View> */}
-      <View style={styles.tip3}>
-        <Text style={styles.tip3text}>🚩</Text>
+      <View style={styles.finishTip}>
+        <Text style={styles.finishTipText}>🚩</Text>
       </View>
     </View>
   );
@@ -90,14 +83,6 @@ export default Timer;
 
 const styles = StyleSheet.create({
   container: { position: "relative", marginBottom: 16 },
-  tip1: { position: "absolute", bottom: 0, left: 0 },
-  tip2: { position: "absolute", top: -60, left: -30, borderRadius: 5 },
-  tip3: { position: "absolute", top: 0, right: -30 },
-  tip2text: {
-    fontSize: 20,
-    padding: 4,
-    paddingHorizontal: 8,
-    textAlign: "center",
-  },
-  tip3text: { fontSize: 40 },
+  finishTip: { position: "absolute", top: 0, right: -30 },
+  finishTipText: { fontSize: 40 },
 });
