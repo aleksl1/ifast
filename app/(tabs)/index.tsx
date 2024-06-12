@@ -52,7 +52,6 @@ export default function TabOneScreen() {
     storage.delete(keys.savedTime);
     showAlert("Gratulacje", "ukończono post!");
     onEnd();
-    console.log("save??");
     save();
     router.navigate("/list");
   }, [save]);
