@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/contexts/AuthContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -51,11 +52,12 @@ const theme = {
 
 function RootLayoutNav() {
   return (
-    <PaperProvider theme={theme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-      </Stack>
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={theme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="signin" />
+        </Stack>
+      </PaperProvider>
+    </AuthProvider>
   );
 }

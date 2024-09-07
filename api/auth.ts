@@ -1,24 +1,43 @@
 import { auth } from "@/firebaseConfig";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { SignInData } from "@/types/auth.types";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
-export const handleSignIn = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, "test@test.pl", "123456");
-      const user = userCredential.user;
-      console.log("Signed in as:", user.email);
-      // Do something after sign in, like navigating to another screen
-    } catch (error) {
-      console.error("Error signing in:", error);
-    }
-  };
+export const handleSignIn = async ({ email, password }: SignInData) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    const user = userCredential.user;
+    return user;
+  } catch (error) {
+    console.error("Error signing in:", error);
+  }
+};
 
-  export const handleSignUp = async () => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, "email", "password");
-      const user = userCredential.user;
-      console.log("Signed up as:", user.email);
-      // Do something after sign up, like navigating to another screen
-    } catch (error) {
-      console.error("Error signing up:", error);
-    }
-  };
+export const handleSignOut = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Error signing in:", error);
+  }
+};
+
+export const handleSignUp = async ({ email, password }: SignInData) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    const user = userCredential.user;
+    return user;
+  } catch (error) {
+    console.error("Error signing up:", error);
+  }
+};

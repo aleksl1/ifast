@@ -13,8 +13,6 @@ import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
 import { useSaveFastToList } from "@/hooks/useSaveFastToList";
 import { keys } from "@/store/storageKeys";
-import { handleSignIn } from "@/api/auth";
-
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -90,8 +88,6 @@ export default function TabOneScreen() {
       }
     }
   }, [selectedFast]);
-
-  useEffect(() => void handleSignIn(), [])
 
   return (
     selectedFast && (
