@@ -1,18 +1,27 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { keys } from "@/store/storageKeys";
+import { router } from "expo-router";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useMMKVString } from "react-native-mmkv";
-import { Avatar, TextInput, Text, Surface } from "react-native-paper";
+import { Avatar, TextInput, Text, Surface, Button } from "react-native-paper";
 
 export default function ProfileScreen() {
-  const [name, setName] = useMMKVString(keys.name);
+  const [name, setName] = useState(keys.name);
+
+  const { signOut } = useAuth();
 
   //todo: waga początkowa, waga aktualna, pierwszy ukończony post - data, ukończonych postów w miesiącu, całkowity czas postów, najwięcej razy ukończono post X,
 
   //todo: 1 surface z liczbą a obok opis textowy
 
+  const onPressSingOut = async () => {
+    await signOut();
+    router.push("/signin");
+  };
+
   return (
     <View style={styles.container}>
-      <Avatar.Image size={100} source={require("../../assets/avatar.jpg")} />
+      <Avatar.Image size={100} source={require("../../../assets/avatar.jpg")} />
       <TextInput
         label="imie"
         mode="outlined"
@@ -42,6 +51,7 @@ export default function ProfileScreen() {
           </Text>
         </Surface>
       </View>
+      <Button onPress={onPressSingOut}>Wyloguj</Button>
     </View>
   );
 }
