@@ -1,12 +1,9 @@
-import { storage } from "@/store/mmkvStorage";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import { useMMKVNumber } from "react-native-mmkv";
 import { Text, useTheme } from "react-native-paper";
 import TimeDisplay from "./TimeDisplay";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { StyleSheet, View } from "react-native";
 import { getFastTimeInSeconds } from "@/utils/utils";
-import { keys } from "@/store/storageKeys";
 
 type TimerProps = {
   fastLength: number;
@@ -24,7 +21,7 @@ const Timer: FC<TimerProps> = ({
   initialValue = 0,
 }) => {
   const [timerValue, setTimerValue] = useState(initialValue);
-  const [savedTime, setSavedTime] = useMMKVNumber(keys.savedTime);
+  const [savedTime, setSavedTime] = useState(0); //todo: get value from backend
   const {
     colors: { primary, onPrimary },
   } = useTheme();
@@ -49,7 +46,7 @@ const Timer: FC<TimerProps> = ({
   useEffect(() => {
     if (reset) {
       setTimerValue(0);
-      storage.delete(keys.savedTime);
+      //todo: reset fast
       setReset(false);
     }
   }, [reset, setReset]);

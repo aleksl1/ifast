@@ -1,12 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { keys } from "@/store/storageKeys";
 import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, TextInput, Text, Surface, Button } from "react-native-paper";
 
 export default function ProfileScreen() {
-  const [name, setName] = useState(keys.name);
+  const [name, setName] = useState("aleks");
 
   const { signOut } = useAuth();
 

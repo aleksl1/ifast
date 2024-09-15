@@ -1,38 +1,32 @@
 import FastOptionsList from "@/components/FastOptionsList";
 import SelectedFastInformation from "@/components/SelectedFastInformation";
 import Timer from "@/components/Timer/Timer";
-import { defaultSelectedFast } from "@/constants/fastOptions";
-import { storage } from "@/store/mmkvStorage";
 import { globalStyles } from "@/styles/globalStyles";
 import { FastDetails } from "@/types/fastTypes";
 import { getSecondsFromStartToNow, showAlert } from "@/utils/utils";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useMMKVNumber } from "react-native-mmkv";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
-import { useSaveFastToList } from "@/hooks/useSaveFastToList";
-import { keys } from "@/store/storageKeys";
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedFast, setSelectedFast] = useState<FastDetails>();
   const [shouldResetTimerState, setShouldResetTimerState] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [savedTime] = useMMKVNumber(keys.savedTime);
+  const savedTime = 0; //todo
   const [initialTimerValue, setInitialTimerValue] = useState(0);
-  const { save } = useSaveFastToList();
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
-    storage.set(keys.selectedFast, JSON.stringify(fast));
+    //todo: select option??
     setDialogVisible(false);
     setShouldResetTimerState(true);
   };
 
   const onEnd = () => {
     setIsStarted(false);
-    storage.delete(keys.savedTime);
+    //todo: end fast
     setInitialTimerValue(0);
     setShouldResetTimerState(true);
   };
@@ -44,17 +38,17 @@ export default function TabOneScreen() {
       startTimestamp: new Date().getTime(),
     };
     setSelectedFast(startedFast);
-    storage.set(keys.selectedFast, JSON.stringify(startedFast));
+    //todo: start fast
     setIsStarted(true);
   };
 
   const onFastCompleted = useCallback(() => {
-    storage.delete(keys.savedTime);
+    //todo: handle complete
     showAlert("Gratulacje", "ukończono post!");
     onEnd();
-    save();
+    // todo: save fast to api
     router.navigate("/list");
-  }, [save]);
+  }, []);
 
   useEffect(() => {
     if (selectedFast?.startTimestamp) {
@@ -74,20 +68,6 @@ export default function TabOneScreen() {
     selectedFast,
     selectedFast?.totalTimeSeconds,
   ]);
-
-  useEffect(() => {
-    if (!selectedFast) {
-      if (storage.contains(keys.selectedFast)) {
-        const storedFastJson = storage.getString(keys.selectedFast);
-        if (storedFastJson) {
-          const storedFast = JSON.parse(storedFastJson);
-          setSelectedFast(storedFast);
-        }
-      } else {
-        storage.set(keys.selectedFast, JSON.stringify(defaultSelectedFast)); //todo: move to hook
-      }
-    }
-  }, [selectedFast]);
 
   return (
     selectedFast && (
