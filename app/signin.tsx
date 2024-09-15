@@ -1,23 +1,22 @@
-import { handleSignIn } from "@/api/auth";
-import { router } from "expo-router";
+import AuthForm from "@/components/forms/AuthForm";
+import { useAuth } from "@/contexts/AuthContext";
+import { Redirect } from "expo-router";
 import { FC } from "react";
 import { View } from "react-native";
-import { Button } from "react-native-paper";
 
 interface SignInScreenProps {}
 
 const SignInScreen: FC<SignInScreenProps> = () => {
-  const onPressSignIn = () => {
-    handleSignIn();
-    router.replace("/");
-  };
+  const { user, isAuthenticated } = useAuth();
+  console.log({ user });
+
+  if (isAuthenticated) {
+    return <Redirect href="/(app)/(tabs)" />;
+  }
 
   return (
     <View style={{ margin: 16, flex: 1, justifyContent: "center" }}>
-      <Button mode="contained" onPress={onPressSignIn}>
-        Zaloguj
-      </Button>
-      <Button>Zarejestruj się</Button>
+      <AuthForm />
     </View>
   );
 };

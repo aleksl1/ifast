@@ -30,6 +30,7 @@
     "firebase": "^9.6.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.53.0",
     "react-native": "0.73.6",
     "react-native-circular-progress": "^1.4.0",
     "react-native-mmkv": "^2.12.2",
