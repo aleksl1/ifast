@@ -8,14 +8,25 @@ import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
 import { router } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
+import useFastOptions from "@/hooks/useFastOptions";
+import Loader from "@/components/Loader";
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [selectedFast, setSelectedFast] = useState<FastDetails>();
   const [shouldResetTimerState, setShouldResetTimerState] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const savedTime = 0; //todo
   const [initialTimerValue, setInitialTimerValue] = useState(0);
+  const user = useAuth();
+  const { fastOptions, isError, isLoading } = useFastOptions();
+  const [selectedFast, setSelectedFast] = useState<FastDetails>(fastOptions[0]);
+
+  useEffect(() => {
+    if (fastOptions?.length) {
+      setSelectedFast(fastOptions[0]);
+    }
+  }, [fastOptions]);
 
   const onFastOptionSelect = (fast: FastDetails) => {
     setSelectedFast(fast);
@@ -59,15 +70,7 @@ export default function TabOneScreen() {
     }
   }, [selectedFast?.startTimestamp]);
 
-  useEffect(() => {
-    if (!savedTime || !selectedFast?.totalTimeSeconds) return;
-    if (savedTime > selectedFast?.totalTimeSeconds) onFastCompleted();
-  }, [
-    onFastCompleted,
-    savedTime,
-    selectedFast,
-    selectedFast?.totalTimeSeconds,
-  ]);
+  if (isLoading || isError) return <Loader />;
 
   return (
     selectedFast && (

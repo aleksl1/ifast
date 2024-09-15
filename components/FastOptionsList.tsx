@@ -1,4 +1,4 @@
-import { fastDurations } from "@/constants/fastOptions";
+import useFastOptions from "@/hooks/useFastOptions";
 import { FastDetails } from "@/types/fastTypes";
 import { showAlert } from "@/utils/utils";
 import { FC } from "react";
@@ -14,6 +14,7 @@ const FastOptionsList: FC<FastOptionsListProps> = ({
   onChipPress,
   selectedFast,
 }) => {
+  const { fastOptions } = useFastOptions();
   const confirmSelection = (fastDetails: FastDetails) => {
     showAlert(
       "Czy chcesz rozpocząć inny post?",
@@ -32,7 +33,7 @@ const FastOptionsList: FC<FastOptionsListProps> = ({
 
   return (
     <View style={styles.list}>
-      {Object.entries(fastDurations).map(([key, fastDetails]) => (
+      {Object.entries(fastOptions).map(([key, fastDetails]) => (
         <Chip
           key={key}
           icon="clock"

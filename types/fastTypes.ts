@@ -1,18 +1,8 @@
-export enum FastLevel {
-  Beginner = 0,
-  Medium = 1,
-  Advanced = 2,
-  Difficult = 3,
-  Extreme = 4,
-}
-
 export type FastDetails = {
   label: string;
   value: number;
-  totalTimeSeconds: number;
   startTimestamp?: number;
   timesCompleted?: number;
-  level: FastLevel;
 };
 
 export enum FastDurationsEnum {
@@ -26,7 +16,6 @@ export enum FastDurationsEnum {
 export type FastDurations = {
   [key: number]: FastDetails;
 };
-
 
 //new
 
@@ -66,7 +55,6 @@ type User = {
   username: string;
   email: string;
 };
-
 
 // Sample data
 
@@ -136,3 +124,9 @@ const fakeUsers: User[] = [
     email: "quickfasts@example.com",
   },
 ];
+
+export type FastOptionsDocument = {
+  value: number;
+  label: string;
+  description: string;
+};

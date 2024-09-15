@@ -1,10 +1,4 @@
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { UserData } from "@/types/user.types";
 
