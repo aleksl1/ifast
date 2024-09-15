@@ -22,6 +22,8 @@ export default function TabOneScreen() {
   const { fastOptions, isError, isLoading } = useFastOptions();
   const [selectedFast, setSelectedFast] = useState<FastDetails>(fastOptions[0]);
 
+  console.log({ user });
+
   useEffect(() => {
     if (fastOptions?.length) {
       setSelectedFast(fastOptions[0]);

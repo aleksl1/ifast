@@ -1,58 +1,17 @@
-import { setDoc, doc, getDocs, collection } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  getDocs,
+  collection,
+  addDoc,
+  Timestamp,
+  query,
+  where,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FastOptionsDocument } from "@/types/fastTypes";
-
-// const fastingOptions = {
-//   16: {
-//     label: "post 16 godzinny",
-//     value: 16,
-//     description:
-//       "Post trwający 16 godzin, znany jako metoda 16:8, gdzie pościsz przez 16 godzin, a masz okno jedzenia przez 8 godzin.",
-//   },
-//   18: {
-//     label: "post 18 godzinny",
-//     value: 18,
-//     description:
-//       "Post trwający 18 godzin, znany jako metoda 18:6, gdzie pościsz przez 18 godzin, a masz okno jedzenia przez 6 godzin.",
-//   },
-//   20: {
-//     label: "post 20 godzinny",
-//     value: 20,
-//     description:
-//       "Post trwający 20 godzin, znany jako metoda 20:4, gdzie pościsz przez 20 godzin, a masz okno jedzenia przez 4 godziny.",
-//   },
-//   36: {
-//     label: "post 36 godzinny",
-//     value: 36,
-//     description:
-//       "Post trwający 36 godzin, dłuższa forma postu, stosowana rzadziej. Polega na całkowitym powstrzymaniu się od jedzenia przez 36 godzin.",
-//   },
-//   48: {
-//     label: "post 48 godzinny",
-//     value: 48,
-//     description:
-//       "Post trwający 48 godzin, dłuższa forma postu, wymagająca większej ostrożności. Powstrzymujesz się od jedzenia przez 48 godzin.",
-//   },
-// };
-
-// export const postFastingOptions = async () => {
-//   try {
-//     // Loop through each fasting option and create a document for each one
-//     for (const key in fastingOptions) {
-//       const fastingOption = fastingOptions[key];
-
-//       // Reference to the document in "fastOptions" collection, using the key as the document ID
-//       const fastingOptionDoc = doc(db, "fastOptions", key);
-
-//       // Set the document with the fasting option data
-//       await setDoc(fastingOptionDoc, fastingOption);
-//     }
-
-//     console.log("Fasting options successfully added to Firestore!");
-//   } catch (error) {
-//     console.error("Error adding fasting options to Firestore: ", error);
-//   }
-// };
+import { FastOptionsDocument, UserFastType } from "@/types/fastTypes";
 
 export const fetchFastOptions = async () => {
   try {
@@ -65,5 +24,78 @@ export const fetchFastOptions = async () => {
   } catch (error) {
     console.error("Error fetching fastOptions: ", error);
     return [];
+  }
+};
+
+export const createFastRecord = async ({
+  userId,
+  fastOptionId,
+  startTime = new Date().toLocaleDateString(),
+  endTime = null,
+  status = "ongoing",
+  notes = "",
+}: UserFastType) => {
+  try {
+    const fastsCollection = collection(db, "fasts");
+
+    // Add a new document with a generated ID
+    const docRef = await addDoc(fastsCollection, {
+      userId,
+      fastOptionId,
+      startTime: Timestamp.fromDate(new Date(startTime)),
+      endTime: endTime ? Timestamp.fromDate(new Date(endTime)) : null,
+      status,
+      notes,
+    });
+
+    console.log("Fast record created with ID: ", docRef.id);
+  } catch (error) {
+    console.error("Error creating fast record: ", error);
+  }
+};
+
+export const getFastsForUser = async (userId: string) => {
+  try {
+    const fastsCollection = collection(db, "fasts");
+    const q = query(fastsCollection, where("userId", "==", userId));
+
+    const querySnapshot = await getDocs(q);
+    const fastRecords = [];
+
+    querySnapshot.forEach((doc) => {
+      fastRecords.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log("Fasting records for user: ", fastRecords);
+    return fastRecords;
+  } catch (error) {
+    console.error("Error fetching fasting records: ", error);
+  }
+};
+
+export const updateFastRecord = async (
+  fastId: string,
+  updates: UserFastType,
+) => {
+  try {
+    const fastDoc = doc(db, "fasts", fastId);
+
+    // Add the updates to the document
+    await updateDoc(fastDoc, updates);
+
+    console.log("Fast record updated.");
+  } catch (error) {
+    console.error("Error updating fast record: ", error);
+  }
+};
+
+export const deleteFastRecord = async (fastId: string) => {
+  try {
+    const fastDoc = doc(db, "fasts", fastId);
+    await deleteDoc(fastDoc);
+
+    console.log("Fast record deleted.");
+  } catch (error) {
+    console.error("Error deleting fast record: ", error);
   }
 };

@@ -130,3 +130,12 @@ export type FastOptionsDocument = {
   label: string;
   description: string;
 };
+
+export type UserFastType = {
+  userId: string;
+  fastOptionId: string;
+  startTime?: string;
+  endTime?: string | null;
+  status?: string;
+  notes?: string;
+};
