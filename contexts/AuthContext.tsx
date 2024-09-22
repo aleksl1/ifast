@@ -23,14 +23,6 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
   const signIn = async (userData: SignInData) => {
     const user = await handleSignIn(userData);
-    console.log("user?.uid", user?.uid);
-    if (user?.uid) {
-      createUser({ uid: user?.uid, email: userData.email });
-    } else {
-      alert("create user error");
-    }
-
-    console.log({ user });
     if (user) {
       setUser(user);
     } else {

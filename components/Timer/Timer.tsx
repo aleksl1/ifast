@@ -14,7 +14,7 @@ type TimerProps = {
 };
 
 const Timer: FC<TimerProps> = ({
-  fastLength,
+  fastLength = 0,
   reset,
   setReset,
   isStarted,

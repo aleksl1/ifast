@@ -3,18 +3,19 @@ import { FastDetails } from "@/types/fastTypes";
 import { showAlert } from "@/utils/utils";
 import { FC } from "react";
 import { StyleSheet, View } from "react-native";
-import { Chip } from "react-native-paper";
+import { ActivityIndicator, Chip } from "react-native-paper";
 
 type FastOptionsListProps = {
   onChipPress: (fast: FastDetails) => void;
-  selectedFast: FastDetails;
+  selectedFast?: FastDetails;
 };
 
 const FastOptionsList: FC<FastOptionsListProps> = ({
   onChipPress,
   selectedFast,
 }) => {
-  const { fastOptions } = useFastOptions();
+  const { fastOptions, isLoading, isError } = useFastOptions();
+  console.log({ fastOptions });
   const confirmSelection = (fastDetails: FastDetails) => {
     showAlert(
       "Czy chcesz rozpocząć inny post?",
@@ -31,6 +32,8 @@ const FastOptionsList: FC<FastOptionsListProps> = ({
     );
   };
 
+  if (isLoading || isError) return <ActivityIndicator />;
+
   return (
     <View style={styles.list}>
       {Object.entries(fastOptions).map(([key, fastDetails]) => (
@@ -38,13 +41,12 @@ const FastOptionsList: FC<FastOptionsListProps> = ({
           key={key}
           icon="clock"
           style={{ padding: 4 }}
-          onPress={
-            () => {}
-            // isFastInProgress todo
-            //   ? confirmSelection(fastDetails)
-            //   : onChipPress(fastDetails)
+          onPress={() =>
+            selectedFast
+              ? confirmSelection(fastDetails)
+              : onChipPress(fastDetails)
           }
-          selected={selectedFast.value === fastDetails.value}
+          selected={selectedFast?.value === fastDetails.value}
           showSelectedOverlay
         >
           {fastDetails.label}

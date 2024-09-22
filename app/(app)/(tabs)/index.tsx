@@ -1,16 +1,15 @@
+import { createFastRecord } from "@/api/fasts";
 import FastOptionsList from "@/components/FastOptionsList";
 import SelectedFastInformation from "@/components/SelectedFastInformation";
 import Timer from "@/components/Timer/Timer";
+import { useAuth } from "@/contexts/AuthContext";
 import { globalStyles } from "@/styles/globalStyles";
-import { FastDetails } from "@/types/fastTypes";
-import { getSecondsFromStartToNow, showAlert } from "@/utils/utils";
-import { useCallback, useEffect, useState } from "react";
+import { FastOptionsDocument, UserFastStatus } from "@/types/fastTypes";
+import { showAlert } from "@/utils/utils";
+import { Redirect, router } from "expo-router";
+import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Dialog, Divider, FAB } from "react-native-paper";
-import { router } from "expo-router";
-import { useAuth } from "@/contexts/AuthContext";
-import useFastOptions from "@/hooks/useFastOptions";
-import Loader from "@/components/Loader";
 
 export default function TabOneScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -18,21 +17,10 @@ export default function TabOneScreen() {
   const [isStarted, setIsStarted] = useState(false);
   const savedTime = 0; //todo
   const [initialTimerValue, setInitialTimerValue] = useState(0);
-  const user = useAuth();
-  const { fastOptions, isError, isLoading } = useFastOptions();
-  const [selectedFast, setSelectedFast] = useState<FastDetails>(fastOptions[0]);
-
-  console.log({ user });
-
-  useEffect(() => {
-    if (fastOptions?.length) {
-      setSelectedFast(fastOptions[0]);
-    }
-  }, [fastOptions]);
-
-  const onFastOptionSelect = (fast: FastDetails) => {
+  const { user, isAuthenticated } = useAuth();
+  const [selectedFast, setSelectedFast] = useState<FastOptionsDocument>();
+  const onFastOptionSelect = (fast: FastOptionsDocument) => {
     setSelectedFast(fast);
-    //todo: select option??
     setDialogVisible(false);
     setShouldResetTimerState(true);
   };
@@ -45,13 +33,13 @@ export default function TabOneScreen() {
   };
 
   const onStart = () => {
-    if (!selectedFast) return;
-    const startedFast = {
-      ...selectedFast,
-      startTimestamp: new Date().getTime(),
-    };
-    setSelectedFast(startedFast);
-    //todo: start fast
+    if (!selectedFast || !user) return;
+    createFastRecord({
+      userId: user?.uid,
+      fastOptionId: selectedFast.value.toString(),
+      startTime: new Date().getTime().toString(),
+      status: UserFastStatus.ONGOING,
+    });
     setIsStarted(true);
   };
 
@@ -63,59 +51,47 @@ export default function TabOneScreen() {
     router.navigate("/list");
   }, []);
 
-  useEffect(() => {
-    if (selectedFast?.startTimestamp) {
-      setInitialTimerValue(
-        getSecondsFromStartToNow(selectedFast.startTimestamp),
-      );
-      setIsStarted(true);
-    }
-  }, [selectedFast?.startTimestamp]);
+  if (!isAuthenticated) return <Redirect href="/signin" />;
 
-  if (isLoading || isError) return <Loader />;
+  // if (isLoading || isError) return <ActivityIndicator />;
 
   return (
-    selectedFast && (
-      <View style={styles.container}>
-        <SelectedFastInformation selectedFast={selectedFast} />
-        <Divider />
-        <View style={styles.timerContainer}>
-          <Timer
-            fastLength={selectedFast.value}
-            reset={shouldResetTimerState}
-            setReset={setShouldResetTimerState}
-            isStarted={isStarted}
-            initialValue={initialTimerValue}
-          />
-          {isStarted ? (
-            <Button mode="contained" onPress={onEnd}>
-              Zakończ post
-            </Button>
-          ) : (
-            <Button mode="contained" onPress={onStart}>
-              Zacznij post
-            </Button>
-          )}
-          <FAB
-            label="Wybierz post"
-            style={styles.fab}
-            onPress={() => setDialogVisible(true)}
-            variant="secondary"
-            icon="book-search-outline"
-            size="large"
-          />
-        </View>
-        <Dialog
-          visible={dialogVisible}
-          onDismiss={() => setDialogVisible(false)}
-        >
-          <FastOptionsList
-            onChipPress={onFastOptionSelect}
-            selectedFast={selectedFast}
-          />
-        </Dialog>
+    <View style={styles.container}>
+      {selectedFast && <SelectedFastInformation selectedFast={selectedFast} />}
+      <Divider />
+      <View style={styles.timerContainer}>
+        <Timer
+          fastLength={selectedFast?.value || 0}
+          reset={shouldResetTimerState}
+          setReset={setShouldResetTimerState}
+          isStarted={isStarted}
+          initialValue={initialTimerValue}
+        />
+        {isStarted ? (
+          <Button mode="contained" onPress={onEnd}>
+            Zakończ post
+          </Button>
+        ) : selectedFast ? (
+          <Button mode="contained" onPress={onStart}>
+            Zacznij post
+          </Button>
+        ) : null}
+        <FAB
+          label="Wybierz post"
+          style={styles.fab}
+          onPress={() => setDialogVisible(true)}
+          variant="secondary"
+          icon="book-search-outline"
+          size="large"
+        />
       </View>
-    )
+      <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+        <FastOptionsList
+          onChipPress={onFastOptionSelect}
+          selectedFast={selectedFast}
+        />
+      </Dialog>
+    </View>
   );
 }
 

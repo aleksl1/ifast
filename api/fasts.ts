@@ -1,17 +1,15 @@
+import { FastOptionsDocument, UserFastType } from "@/types/fastTypes";
 import {
-  setDoc,
+  addDoc,
+  collection,
+  deleteDoc,
   doc,
   getDocs,
-  collection,
-  addDoc,
-  Timestamp,
   query,
-  where,
-  deleteDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FastOptionsDocument, UserFastType } from "@/types/fastTypes";
 
 export const fetchFastOptions = async () => {
   try {
@@ -42,8 +40,8 @@ export const createFastRecord = async ({
     const docRef = await addDoc(fastsCollection, {
       userId,
       fastOptionId,
-      startTime: Timestamp.fromDate(new Date(startTime)),
-      endTime: endTime ? Timestamp.fromDate(new Date(endTime)) : null,
+      // startTime: Timestamp.fromDate(new Date(startTime)),
+      // endTime: endTime ? Timestamp.fromDate(new Date(endTime)) : null,
       status,
       notes,
     });
@@ -60,12 +58,12 @@ export const getFastsForUser = async (userId: string) => {
     const q = query(fastsCollection, where("userId", "==", userId));
 
     const querySnapshot = await getDocs(q);
-    const fastRecords = [];
+    const fastRecords: UserFastType[] = [];
 
     querySnapshot.forEach((doc) => {
       fastRecords.push({ id: doc.id, ...doc.data() });
     });
-
+    console.log({ fastRecords });
     console.log("Fasting records for user: ", fastRecords);
     return fastRecords;
   } catch (error) {
