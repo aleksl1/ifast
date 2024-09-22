@@ -1,41 +1,24 @@
 import Card from "@/components/Card";
-import { useFastList } from "@/hooks/useFastList";
 import { FastDetails } from "@/types/fastTypes";
 import { getFastCardSubtitleText } from "@/utils/utils";
-import { capitalize } from "lodash";
-import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar, Button, Text } from "react-native-paper";
+import { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Avatar, Text } from "react-native-paper";
 
 export default function FastListScreen() {
-  const {
-    fastList: storedFasts,
-    clearStoredFasts,
-    getStoredFasts,
-    isLoading,
-  } = useFastList();
   const [fastList, setFastList] = useState<FastDetails[]>([]);
-
+  //todo get list from api
   const onClear = () => {
     setFastList([]);
-    clearStoredFasts();
   };
-
-  useEffect(() => {
-    storedFasts && setFastList(storedFasts);
-  }, [storedFasts]);
-
-  useEffect(() => {
-    getStoredFasts();
-  }, [getStoredFasts]);
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={getStoredFasts} />
-      }
+      // refreshControl={
+      //   <RefreshControl refreshing={isLoading} onRefresh={getStoredFasts} />
+      // }
     >
       {fastList.length ? (
         fastList
@@ -43,7 +26,7 @@ export default function FastListScreen() {
           .map((fast) => (
             <Card
               key={fast.startTimestamp}
-              title={capitalize(fast.label)}
+              title={fast.label}
               subtitle={getFastCardSubtitleText(
                 fast.startTimestamp!,
                 fast.totalTimeSeconds,
